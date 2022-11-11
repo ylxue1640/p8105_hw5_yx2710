@@ -1,0 +1,54 @@
+---
+title: "p8105_hw5_yx2710"
+output: github_document
+---
+```{r packages}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%",
+  echo = TRUE
+)
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+#Problem 1 - list
+
+```{r}
+All_names = list.files("data/")
+```
+
+```{r}
+all_df = 
+  tibble(all_names = list.files("data")) %>%
+  mutate(file_contents = purrr::map(all_names, ~ read_csv(file.path("./data", .)))) %>% 
+  mutate(names = str_remove(all_names, ".csv")) %>% 
+  select(names,file_contents) %>% 
+  separate(col = names, into = c("group", "id"), sep = "_")
+```
+
+spaghetti plot
+
+```{r}
+all_df %>% 
+  unnest(file_contents) %>% 
+  pivot_longer(
+    week_1:week_8,
+    names_to = "week",
+    names_prefix = "week_",
+    values_to = "observation"
+  ) %>% 
+  ggplot(aes(x = week, y = observation, group = id, color = group))+
+  geom_path()
+```
+According to the plot, we can see that the observation value of experiment arm is higher than the control group. What's more, the former one increases over time and the later one decreases a little but is more stable.
+
+
