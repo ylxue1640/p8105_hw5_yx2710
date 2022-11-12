@@ -51,4 +51,55 @@ all_df %>%
 ```
 According to the plot, we can see that the observation value of experiment arm is higher than the control group. What's more, the former one increases over time and the later one decreases a little but is more stable.
 
+#Problem 2 - homicides 
+
+```{r}
+homicides_df = read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv")
+```
+The data provided by the Washington Post and contains `r nrow(homicides_df)` homocide cases in 50 large U.S. cities. The names of the variables are `r names(homicides_df)`. 
+
+```{r}
+homicide_df_new = 
+  homicides_df %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    city_state = str_c(city, state, sep = ", "),
+    status = case_when(
+      disposition == "Closed without arrest" ~ "unsolved",
+      disposition == "Open/No arrest" ~ "unsolved",
+      disposition == "Closed by arrest" ~ "solved"
+    )
+  )
+```
+
+```{r}
+homicide_sum_df =
+  homicide_df_new %>% 
+  group_by(city_state) %>% 
+  summarize(hom_n = n(),
+            hom_un_n = sum(status == "unsolved"))
+```
+
+```{r}
+homicide_bal_df = 
+  homicide_df_new %>% 
+  filter(city_state == "Baltimore, MD") %>% 
+  summarize(
+    unsolved_n = sum(status == "unsolved"),
+    n = n()
+  )
+```
+
+```{r}
+homicide_p = 
+  prop.test(
+    x = homicide_bal_df %>% pull(unsolved_n),
+    n = homicide_bal_df %>% pull(n)
+  ) 
+
+homicide_p %>% 
+  broom::tidy()
+```
+
+
 
