@@ -166,6 +166,15 @@ t_test = function(n, mu = 0, sigma = 5){
 t_test(30)
 ```
 
+```{r}
+output = vector("list", 5000)
+
+for (i in 1:5000) {
+  output[[i]] = t_test(30) 
+}
+
+sim_results = bind_rows(output)
+```
 
 
 
