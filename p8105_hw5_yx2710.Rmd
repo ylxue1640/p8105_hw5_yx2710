@@ -176,6 +176,17 @@ for (i in 1:5000) {
 sim_results = bind_rows(output)
 ```
 
+```{r}
+sim_results_df = 
+  expand_grid(
+    mu_all = c(1,2,3,4,5,6),
+    iter = 1:5000
+  ) %>% 
+  mutate(
+    estimate_df = map(.x = mu_all, ~t_test(30, mu = .x))
+  ) %>% 
+  unnest(estimate_df)
+```
 
 
 
