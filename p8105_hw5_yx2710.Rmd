@@ -188,6 +188,22 @@ sim_results_df =
   unnest(estimate_df)
 ```
 
+```{r}
+sim_results_rej = 
+  sim_results_df %>% 
+  group_by(mu_all) %>% 
+  summarize(rej_prop = sum(p.value < 0.05)/length(p.value))
+
+plot_rej = 
+  sim_results_rej %>% 
+  ggplot(aes(x = mu_all, y = rej_prop))+
+  geom_point()+
+  geom_line()+
+  xlab("value of μ")+
+  ylab("prportion of rejecting null hypothesis")
+
+plot_rej
+```
 
 
 
