@@ -101,5 +101,29 @@ homicide_p %>%
   broom::tidy()
 ```
 
+run prop.test for each of the cities in your dataset
+```{r}
+city_prop = function(city){
+  city_sum = 
+    city %>% 
+    summarize(hom_n = n(),
+            hom_un_n = sum(status == "unsolved"))
+  
+  city_prop = 
+    prop.test(
+    x = city_sum %>% pull(unsolved_n),
+    n = city_sum %>% pull(n)
+  ) 
+  
+  return(city_prop)
+}
+
+```
+
+```{r}
+
+```
+
+
 
 
