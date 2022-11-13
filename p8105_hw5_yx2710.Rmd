@@ -68,7 +68,7 @@ homicide_df_new =
       disposition == "Closed without arrest" ~ "unsolved",
       disposition == "Open/No arrest" ~ "unsolved",
       disposition == "Closed by arrest" ~ "solved"
-    )
+    ) 
   )
 ```
 
@@ -106,8 +106,8 @@ run prop.test for each of the cities in your dataset
 city_prop = function(city){
   city_sum = 
     city %>% 
-    summarize(hom_n = n(),
-            hom_un_n = sum(status == "unsolved"))
+    summarize(n = n(),
+            unsolved_n = sum(status == "unsolved"))
   
   city_prop = 
     prop.test(
@@ -121,9 +121,27 @@ city_prop = function(city){
 ```
 
 ```{r}
-
+all_city_test = 
+  homicide_df_new %>% 
+  select(city_state, everything()) %>% 
+  nest(data = uid:status) %>% 
+  mutate(
+    city_test = purrr::map(data, city_prop),
+    tidy_test = purrr::map(city_test, broom::tidy)
+  ) %>% 
+  select(city_state, tidy_test) %>%
+  unnest(tidy_test) %>% 
+  select(city_state, estimate, conf.low, conf.high)
 ```
 
+```{r}
+all_city_test %>%
+  mutate(city_state = fct_reorder(city_state, estimate)) %>% 
+  ggplot(aes(x = city_state, y = estimate))+
+  geom_point()+
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high))+ 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
 
 
 
