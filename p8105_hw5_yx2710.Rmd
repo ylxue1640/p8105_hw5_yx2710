@@ -188,6 +188,7 @@ sim_results_df =
   unnest(estimate_df)
 ```
 
+First plot:
 ```{r}
 sim_results_rej = 
   sim_results_df %>% 
@@ -205,9 +206,34 @@ plot_rej =
 plot_rej
 ```
 
+As the value of μ increases, the proportion of rejecting null hypothesis increases which means the power increases. As a result, we can conclude that as the effect size increases, the power also increases.
 
+Second plot
+```{r}
+mu_avg = 
+  sim_results_df %>% 
+  group_by(mu_all) %>% 
+  summarize(mu_hat_avg = mean(estimate))
+```
 
+```{r}
+rej_mu_avg = 
+  sim_results_df %>% 
+  filter(p.value < 0.05) %>% 
+  group_by(mu_all) %>% 
+  summarize(mu_hat_avg = mean(estimate))
+```
 
+```{r}
+plot_avg = 
+  ggplot(mu_avg, aes(x = mu_all, y = mu_hat_avg))+
+  geom_line()+
+  geom_point()+
+  geom_line(data = rej_mu_avg, color = "blue")+
+  geom_point(data = rej_mu_avg, color = "blue")+
+  xlab("Value of μ")+
+  ylab("Average Estimated Mean")+
 
-
+plot_avg
+```
 
